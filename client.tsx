@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
+import App from './layouts/App';
 
 render(
-   <div>test</div>, 
+   <App />, 
    document.querySelector('#app')
 )
