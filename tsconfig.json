@@ -10,6 +10,12 @@
      "strict": true,
      "resolveJsonModule": true,
      "baseUrl": ".",
+     "jsxImportSource": "@emotion/react",
+     "plugins": [
+      {
+        "transform": "typescript-loadable-components-plugin"
+      }
+    ],
      "paths": {
        "@hooks/*": ["hooks/*"],
        "@components/*": ["components/*"],

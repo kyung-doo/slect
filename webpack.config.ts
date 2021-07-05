@@ -4,7 +4,7 @@ import webpack from 'webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const isDevelopment: boolean = process.env.NODE_ENV !== 'production';
 
 const config: webpack.Configuration = {
    name: 'sleact',
@@ -38,15 +38,22 @@ const config: webpack.Configuration = {
                         debug: isDevelopment,
                      },
                   ],
-                  '@babel/preset-react',
+                  [  
+                     '@babel/preset-react',
+                     { 
+                        runtime: "automatic", 
+                        importSource: "@emotion/react"
+                     }
+                  ],
+                  '@emotion/babel-preset-css-prop',
                   '@babel/preset-typescript',
                ],
                env: {
                   development: {
-                     plugins: [['@emotion', { sourceMap: true }], require.resolve('react-refresh/babel')],
+                     plugins: [['@emotion/babel-plugin', { sourceMap: true }], require.resolve('react-refresh/babel')],
                   },
                   production: {
-                     plugins: ['@emotion'],
+                     plugins: ['@emotion/babel-plugin'],
                   },
                },
             },
@@ -79,6 +86,7 @@ const config: webpack.Configuration = {
       historyApiFallback: true, // react router
       port: 3090,
       publicPath: '/dist/',
+      open: true
       // proxy: {
       //    '/api/': {
       //       target: 'http://localhost:3095',
