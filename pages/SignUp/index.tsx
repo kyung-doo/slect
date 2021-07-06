@@ -17,10 +17,12 @@ import {
 
 
 const SignUp = () => {
+
    const [ email, setEmail ] = useState('');
    const [ nickname, setNickname ] = useState('');
    const [ password, setPassword ] = useState('');
    const [ passwordCheck, setPasswordCheck ] = useState('');
+   const [ mismatchError, setMismatchError ] = useState(false);
 
    const onChangeEmail = useCallback(( e ) => {
       setEmail( e.target.value );
@@ -32,14 +34,16 @@ const SignUp = () => {
 
    const onChangepassword = useCallback(( e ) => {
       setPassword( e.target.value );
-   }, []);
+      setMismatchError( e.target.value === passwordCheck );
+   }, [passwordCheck]);
    const onChangePasswordCheck = useCallback(( e ) => {
       setPasswordCheck( e.target.value )
-   }, []);
+      setMismatchError( e.target.value === password );
+   }, [password]);
    const onSubmit = useCallback(( e ) => {
-      console.log(email, nickname, password, passwordCheck);
+      console.log(email, nickname, password, passwordCheck, mismatchError);
       e.preventDefault();
-   }, [email, nickname, password, passwordCheck]);
+   }, [email, nickname, password, passwordCheck, mismatchError]);
 
    return (
       <div id="container">
@@ -49,7 +53,8 @@ const SignUp = () => {
             <Label id="email-label">
                <span>이메일 주소</span>
                <div>
-                  <Input type="email" id="email" name="email" value={email} onChange={onChangeEmail} />
+                  <Input type="email" 
+                     id="email" name="email" value={email} onChange={onChangeEmail} />
                </div>
             </Label>
 
@@ -66,6 +71,7 @@ const SignUp = () => {
                   <Input type="password" id="password" name="password" value={password} onChange={onChangepassword} />
                </div>
             </Label>
+            
             <Label id="password-check-label">
                <span>비밀번호 확인</span>
                <div>
@@ -77,9 +83,9 @@ const SignUp = () => {
                   onChange={onChangePasswordCheck}
                   />
                </div>
-               {/* {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
+               {!mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
                {!nickname && <Error>닉네임을 입력해주세요.</Error>}
-               {signUpError && <Error>{signUpError}</Error>}
+               {/* {signUpError && <Error>{signUpError}</Error>}
                {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>} */}
             </Label>
             <Button type="submit">회원가입</Button>
