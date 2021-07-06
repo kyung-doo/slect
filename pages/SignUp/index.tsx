@@ -36,7 +36,10 @@ const SignUp = () => {
    const onChangePasswordCheck = useCallback(( e ) => {
       setPasswordCheck( e.target.value )
    }, []);
-   const onSubmit = useCallback(( e ) => {}, []);
+   const onSubmit = useCallback(( e ) => {
+      console.log(email, nickname, password, passwordCheck);
+      e.preventDefault();
+   }, [email, nickname, password, passwordCheck]);
 
    return (
       <div id="container">
