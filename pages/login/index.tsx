@@ -24,7 +24,7 @@ import fetcher from '@utils/fetcher';
 
 
 const Login = () => {
-   
+
    const { data, error } = useSWR('/api/users', fetcher);
    const [ email, onChangeEmail ] = useInput('');
    const [ password, onChangePassword ] = useInput('');
