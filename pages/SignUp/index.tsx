@@ -66,6 +66,7 @@ const SignUp = () => {
             });
             setSignUpSuccess( true );
          } catch( e ) {
+            console.log(e)
             setSignUpError( e.response.data );
          }
       }

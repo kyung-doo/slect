@@ -17,18 +17,40 @@ import {
 
 import { Link } from 'react-router-dom';
 import useInput from '@hooks/useInput';
+import axios from 'axios';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 
 
 const Login = () => {
-
+   
+   const { data, error } = useSWR('/api/users', fetcher);
    const [ email, onChangeEmail ] = useInput('');
    const [ password, onChangePassword ] = useInput('');
-   const [logInError, setLoginError] = useState(false);
+   const [logInError, setLoginError] = useState('');
 
-   const onSubmit = useCallback(( e: FormEvent<HTMLFormElement> ) => {
+   const onSubmit = useCallback( async( e: FormEvent<HTMLFormElement> ) => {
       e.preventDefault();
-   }, [email, password])
+      setLoginError('');
+      let res;
+      try {
+         res = await axios.post('/api/users/login', {
+            email: email,
+            password: password
+         });
+      } catch( e ) {
+         setLoginError(e.response?.data);
+      }
+   }, [email, password]);
+
+   if (data === undefined) {
+      return <div>로딩중...</div>;
+   }
+
+   if (data) {
+      console.log(data);
+   }
 
    return (
       <div id="container">
@@ -45,7 +67,7 @@ const Login = () => {
                <div>
                   <Input type="password" id="password" name="password" value={password} onChange={onChangePassword} />
                </div>
-               {logInError && <Error>이메일과 비밀번호 조합이 일치하지 않습니다.</Error>}
+               {logInError && <Error>{logInError}</Error>}
             </Label>
             <Button type="submit">로그인</Button>
          </Form>
