@@ -15,7 +15,7 @@ import {
    Header 
 } from '@pages/SignUp/styles';
 
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import useInput from '@hooks/useInput';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -25,7 +25,7 @@ import fetcher from '@utils/fetcher';
 
 const Login = () => {
 
-   const { data, error } = useSWR('/api/users', fetcher);
+   const { data, error, revalidate, mutate } = useSWR('/api/users', fetcher);
    const [ email, onChangeEmail ] = useInput('');
    const [ password, onChangePassword ] = useInput('');
    const [logInError, setLoginError] = useState('');
@@ -39,6 +39,7 @@ const Login = () => {
             email: email,
             password: password
          });
+         revalidate();
       } catch( e ) {
          setLoginError(e.response?.data);
       }
@@ -49,7 +50,7 @@ const Login = () => {
    }
 
    if (data) {
-      console.log(data);
+      return <Redirect to="/workspace/sleact/channel/일반" />
    }
 
    return (
