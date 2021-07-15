@@ -3,7 +3,8 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import loadable from '@loadable/component';
 const Login = loadable(() => import('@pages/Login'));
 const SignUp = loadable(() => import('@pages/SignUp'));
-const Cannel = loadable(() => import('@pages/Channel'));
+const Workspace = loadable(() => import('@layouts/Workspace'));
+
 
 const App: FC = () => {
    return (
@@ -11,7 +12,7 @@ const App: FC = () => {
          <Redirect exact path="/" to="/login" />
          <Route path="/login" component={ Login } />
          <Route path="/signup" component={ SignUp } />
-         <Route path="/workspace/channel" component={ Cannel } />
+         <Route path="/workspace" component={ Workspace } />
       </Switch>
    )
 }

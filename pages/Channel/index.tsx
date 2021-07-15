@@ -1,11 +1,11 @@
-import React from 'react';
-import Workspace from '@layouts/Workspace';
+import React, { FC } from 'react';
+import { Container, Header } from '@pages/Channel/styles'
 
-const Channel = () => {
+const Channel: FC = () => {
    return (
-      <Workspace>
-         <div>로그인 하신것을 축하드려요.</div>
-      </Workspace>
+      <Container>
+         <Header>channel</Header>
+      </Container>
    );
 }
 

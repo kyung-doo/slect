@@ -2,10 +2,24 @@ import React, { FC, useCallback } from 'react';
 import axios from 'axios';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
-import { Redirect } from 'react-router';
-import gravatar from 'gravatar'
+import { Redirect, Route, Switch } from 'react-router';
+import gravatar from 'gravatar';
 
-import { Channels, Chats, Header, MenuScroll, ProfileImg, RightMenu, WorkspaceName, Workspaces, WorkspaceWrapper } from '@layouts/Workspace/styles'
+import { 
+   Channels, 
+   Chats, 
+   Header, 
+   MenuScroll, 
+   ProfileImg, 
+   RightMenu, 
+   WorkspaceName, 
+   Workspaces, 
+   WorkspaceWrapper 
+} from '@layouts/Workspace/styles';
+
+import Channel from '@pages/Channel';
+import DirectMessage from '@pages/DirectMessage';
+import Menu from '@components/Menu';
 
 
 const Workspace: FC = ({ children }) => {
@@ -29,6 +43,7 @@ const Workspace: FC = ({ children }) => {
             <RightMenu>
                <span>
                   <ProfileImg src={gravatar.url(data.nickname, {s: '28px', d: 'retro'})} alt={data.nickname} />
+                  <Menu show={false} onCloseModal={()=>{}} style={{ right: 0, top: 38}}>메뉴</Menu>
                </span>
             </RightMenu>
          </Header>
@@ -41,7 +56,12 @@ const Workspace: FC = ({ children }) => {
                   {/* <Menu></Menu> */}
                </MenuScroll>
             </Channels>
-            <Chats>Chats</Chats>
+            <Chats>
+               <Switch>
+                  <Route path="/workspace/channel" component={Channel} />
+                  <Route path="/workspace/dm" component={DirectMessage} />
+               </Switch>
+            </Chats>
          </WorkspaceWrapper>
       </div>
    );
