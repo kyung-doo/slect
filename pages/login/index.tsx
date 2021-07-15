@@ -39,7 +39,7 @@ const Login = () => {
             email: email,
             password: password
          });
-         revalidate();
+         mutate(res.data, false);
       } catch( e ) {
          setLoginError(e.response?.data);
       }
@@ -50,7 +50,7 @@ const Login = () => {
    }
 
    if (data) {
-      return <Redirect to="/workspace/sleact/channel/일반" />
+      return <Redirect to="/workspace/channel" />
    }
 
    return (

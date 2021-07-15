@@ -24,12 +24,16 @@ import {
 
 import useInput from '@hooks/useInput';
 import axios from 'axios';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 
 
 
 
 const SignUp = () => {
+
+   const { data, error, revalidate } = useSWR('/api/users', fetcher);
 
    const [ email, onChangeEmail ] = useInput('');
    const [ nickname, onChangeNickname ] = useInput('');
@@ -71,6 +75,14 @@ const SignUp = () => {
          }
       }
    }, [email, nickname, password, passwordCheck, mismatchError, signUpError]);
+
+   if (data === undefined) {
+      return <div>로딩중...</div>;
+   }
+
+   if(data) {
+      return <Redirect to="/workspace/channel" />
+   }
 
    return (
       <div id="container">
