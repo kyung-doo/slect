@@ -1,5 +1,5 @@
-import react, { CSSProperties, FC } from 'react';
-import { CreateMenu } from './styles';
+import react, { CSSProperties, FC, useCallback, MouseEvent } from 'react';
+import { CloseModalButton, CreateMenu } from './styles';
 
 interface Props {
    show: boolean,
@@ -9,13 +9,16 @@ interface Props {
 }
 
 
-const Menu: FC<Props> = ({ children, style, show, onCloseModal, closeButton }) => {
+const Menu: FC<Props> = ({ children, style, show, onCloseModal, closeButton = true }) => {
 
    if(!show) return null;
 
    return (
-      <CreateMenu>
-         { children }
+      <CreateMenu onClick={onCloseModal}>
+         <div style={style} onClick={(e) => { e.stopPropagation(); }}>
+            { closeButton && <CloseModalButton onClick={onCloseModal}>&times;</CloseModalButton> }
+            { children }
+         </div>
       </CreateMenu>
    );
 }

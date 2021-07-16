@@ -1,17 +1,22 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import axios from 'axios';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { Redirect, Route, Switch } from 'react-router';
+import { Link } from 'react-router-dom';
 import gravatar from 'gravatar';
 
 import { 
+   AddButton,
    Channels, 
    Chats, 
    Header, 
+   LogOutButton, 
    MenuScroll, 
    ProfileImg, 
+   ProfileModal, 
    RightMenu, 
+   WorkspaceButton, 
    WorkspaceName, 
    Workspaces, 
    WorkspaceWrapper 
@@ -20,20 +25,33 @@ import {
 import Channel from '@pages/Channel';
 import DirectMessage from '@pages/DirectMessage';
 import Menu from '@components/Menu';
+import { IUser, IWorkspace } from '@typings/db';
+
 
 
 const Workspace: FC = ({ children }) => {
 
-   const { data, error, revalidate, mutate } = useSWR('/api/users', fetcher);
+   const { data: userData, error, revalidate, mutate } = useSWR<IUser>('/api/users', fetcher);
+   const [showUserMenu, setShowUserMenu] = useState( false );
+
+   console.log(userData);
 
    const onLogout = useCallback( async() => {
       try {
          axios.post('/api/users/logout');
-         mutate( false, false );
+         mutate( undefined, false );
       } catch(e){}
    }, []);
 
-   if(!data) {
+   const onClickUserProfile = useCallback(( e ) => {
+      setShowUserMenu(( prev ) => !prev );
+   }, []);
+
+   const onClickCreateWorkspace = useCallback(( e ) => {
+
+   }, []);
+
+   if(!userData) {
       return <Redirect to="/login" />
    }
 
@@ -41,15 +59,36 @@ const Workspace: FC = ({ children }) => {
       <div>
          <Header>
             <RightMenu>
-               <span>
-                  <ProfileImg src={gravatar.url(data.nickname, {s: '28px', d: 'retro'})} alt={data.nickname} />
-                  <Menu show={false} onCloseModal={()=>{}} style={{ right: 0, top: 38}}>메뉴</Menu>
+               <span onClick={onClickUserProfile}>
+                  <ProfileImg 
+                     src={gravatar.url(userData?.nickname, {s: '28px', d: 'retro'})} 
+                     alt={userData?.nickname} />
+                  <Menu show={showUserMenu} 
+                     onCloseModal={onClickUserProfile} 
+                     style={{ right: 0, top: 38}}>
+                     <ProfileModal>
+                        <img src={gravatar.url(userData?.nickname, {s: '28px', d: 'retro'})} alt={userData?.nickname} />
+                        <div>
+                           <span id="profile-name">{userData?.nickname}</span>
+                           <span id="profile-active">Active</span>
+                        </div>
+                     </ProfileModal>
+                     <LogOutButton onClick={onLogout}>로그아웃</LogOutButton>
+                  </Menu>
                </span>
             </RightMenu>
          </Header>
-         <button onClick={onLogout}>로그아웃</button>
          <WorkspaceWrapper>
-            <Workspaces>test</Workspaces>
+            <Workspaces>
+               {userData.Workspaces?.map((ws: IWorkspace) => {
+                  return (
+                     <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
+                        <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
+                     </Link>
+                  )
+               })}
+               <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
+            </Workspaces>
             <Channels>
                <WorkspaceName>Sleact</WorkspaceName>
                <MenuScroll>
