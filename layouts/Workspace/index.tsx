@@ -19,37 +19,72 @@ import {
    WorkspaceButton, 
    WorkspaceName, 
    Workspaces, 
-   WorkspaceWrapper 
+   WorkspaceWrapper
 } from '@layouts/Workspace/styles';
+
+import {
+   Button,
+   Input,
+   Label
+} from '@pages/SignUp/styles';
 
 import Channel from '@pages/Channel';
 import DirectMessage from '@pages/DirectMessage';
 import Menu from '@components/Menu';
+import Modal from '@components/Modal';
 import { IUser, IWorkspace } from '@typings/db';
+import useInput from '@hooks/useInput';
 
 
 
 const Workspace: FC = ({ children }) => {
 
-   const { data: userData, error, revalidate, mutate } = useSWR<IUser>('/api/users', fetcher);
+   const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher);
    const [showUserMenu, setShowUserMenu] = useState( false );
+   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
+   const [newWorkspace, onChangeNewWorkspace, setNewWorkpsace] = useInput('');
+   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
 
    console.log(userData);
 
    const onLogout = useCallback( async() => {
       try {
          axios.post('/api/users/logout');
-         mutate( undefined, false );
+         mutate( false, false );
       } catch(e){}
    }, []);
 
    const onClickUserProfile = useCallback(( e ) => {
+      e.stopPropagation();
       setShowUserMenu(( prev ) => !prev );
    }, []);
 
    const onClickCreateWorkspace = useCallback(( e ) => {
-
+      setShowCreateWorkspaceModal(true);
    }, []);
+
+   const onCloseModal = useCallback(( e ) => {
+      setShowCreateWorkspaceModal(false);
+   }, []);
+
+   const onCreateWorkspace = useCallback( async( e ) => {
+      e.preventDefault();
+      if(!newWorkspace || !newWorkspace.trim()) return;
+      if(!newUrl || !newUrl.trim()) return;
+
+      try {
+         await axios.post('/api/workspaces', {
+            workspace: newWorkspace,
+            url: newUrl
+         });
+         revalidate();
+         setShowCreateWorkspaceModal(false);
+         setNewWorkpsace('');
+         setNewUrl('');
+      } catch(e) {
+         console.error(e);
+      }
+   }, [newWorkspace, newUrl]);
 
    if(!userData) {
       return <Redirect to="/login" />
@@ -78,6 +113,7 @@ const Workspace: FC = ({ children }) => {
                </span>
             </RightMenu>
          </Header>
+
          <WorkspaceWrapper>
             <Workspaces>
                {userData.Workspaces?.map((ws: IWorkspace) => {
@@ -102,6 +138,20 @@ const Workspace: FC = ({ children }) => {
                </Switch>
             </Chats>
          </WorkspaceWrapper>
+
+         <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
+            <form onSubmit={onCreateWorkspace}>
+               <Label id="workspace-label">
+                  <span>워크스페이스 이름</span>
+                  <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace} />
+               </Label>
+               <Label id="workspace-url-label">
+                  <span>워크스페이스 url</span>
+                  <Input id="workspace" value={newUrl} onChange={onChangeNewUrl} />
+               </Label>
+               <Button type="submit">생성하기</Button>
+            </form>
+         </Modal>
       </div>
    );
 }
